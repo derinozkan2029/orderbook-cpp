@@ -1,8 +1,8 @@
 # orderbook-cpp
 
 A single-symbol limit order book implementing price-time priority matching
-in modern C++, built to practice the kind of low-level, performance-minded
-code that comes up in trading systems.
+in C++, built to practice the kind of low-level and performance-minded
+code that comes up in trading systems. The goal of this project was for me to get used to C++ and learn more about trading.
 
 ## What it does
 
@@ -15,8 +15,7 @@ The core is `OrderBook`, which supports:
 - **Querying the best bid/ask.**
 
 Matching follows **price-time priority**: the best price is matched first
-(highest bid, lowest ask), and within a price level, orders are filled in
-the order they arrived (FIFO).
+(highest bid, lowest ask), and within a price level, orders are filled in the order they arrived (FIFO).
 
 **Self-trade prevention (STP):** every order carries an `owner` (the
 participant who submitted it), and an incoming order is never matched
@@ -24,8 +23,7 @@ against a resting order with the same owner. This implementation uses
 "skip" semantics: a same-owner resting order is left exactly where it is,
 untouched, and the incoming order looks past it for the next eligible
 resting order, at that price level or a worse-but-still-crossing one. See
-`OrderBook.h` for why "skip" was chosen over canceling the resting order,
-the incoming order, or both.
+`OrderBook.h` for why "skip" was chosen over canceling the resting order, the incoming order, or both.
 
 ## Design decisions
 
@@ -89,4 +87,5 @@ the only crossing order shares its owner).
 
 This is intentionally scoped to the matching core: no market orders, no
 multiple symbols, no networking/market-data feed, no throughput
-benchmarking. Those are natural next steps if the project grows.
+benchmarking. Those are natural next steps if I decide to expand the project. The next steps would be to add market orders,
+create a support for order modification instead of just canceling and resubmitting. 

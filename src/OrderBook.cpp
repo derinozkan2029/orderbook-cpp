@@ -3,21 +3,14 @@
 #include <algorithm>
 #include <stdexcept>
 
-// Matches `incoming` against one side of the book (whichever opposes it).
-// `priceIsEligible` decides whether a given price level still crosses the
-// incoming order's limit price. Returns the trades generated.
-//
-// Walks price levels best-to-worst. Within each level, walks orders
+// Matches `incoming` against one side of the book (whichever opposes it) `priceIsEligible` decides whether a given price level still crosses the
+// incoming order's limit price. Returns the trades generated. Walks price levels best-to-worst. Within each level, walks orders
 // oldest-to-newest, but skips (does not match, does not remove) any
-// resting order owned by the same participant as the incoming order --
-// see the self-trade prevention note on the class declaration. A level is
-// only erased from the book once it is actually empty; a level that still
-// contains skipped same-owner orders is left in the book and the price
+// resting order owned by the same participant as the incoming order -- see the self-trade prevention note on the class declaration. A level is
+// only erased from the book once it is actually empty; a level that still contains skipped same-owner orders is left in the book and the price
 // iterator simply advances to the next level.
 template <typename Book, typename PriceEligible>
-static std::vector<Trade> matchAgainst(
-        Order& incoming, Book& book, PriceEligible priceIsEligible,
-        std::unordered_map<OrderId, std::pair<Side, Price>>& locate) {
+static std::vector<Trade> matchAgainst( Order& incoming, Book& book, PriceEligible priceIsEligible, std::unordered_map<OrderId, std::pair<Side, Price>>& locate) {
     std::vector<Trade> trades;
 
     auto levelIt = book.begin();
@@ -46,7 +39,6 @@ static std::vector<Trade> matchAgainst(
                 ++orderIt;
             }
         }
-
         auto nextLevelIt = std::next(levelIt);
         if (level.empty()) {
             book.erase(levelIt);
@@ -59,13 +51,11 @@ static std::vector<Trade> matchAgainst(
 
 std::vector<Trade> OrderBook::match(Order& incoming) {
     if (incoming.side == Side::Buy) {
-        // A buy crosses the spread as long as there's an ask at or below
-        // the incoming order's limit price.
+        // A buy crosses the spread as long as there's an ask at or below the incoming order's limit price.
         return matchAgainst(
             incoming, asks_, [&](Price p) { return p <= incoming.price; }, locate_);
     }
-    // A sell crosses the spread as long as there's a bid at or above the
-    // incoming order's limit price.
+    // A sell crosses the spread as long as there's a bid at or above the  incoming order's limit price.
     return matchAgainst(
         incoming, bids_, [&](Price p) { return p >= incoming.price; }, locate_);
 }
